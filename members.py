@@ -5,7 +5,7 @@ a,b = st.columns(2)
 b.image("Images/logofupu.png",caption="La fuerza del pueblo",width=100)
 st.title("Reporte de miembros")
 
-data = st.file_uploader("Sube el archivo excel",type=["xlsx","xls"])
+data = st.file_uploader("Sube el archivo excel",type=["xlsx"])
 
 if data is not None:
    df = pd.read_excel(data)
