@@ -43,16 +43,9 @@ if data is not None:
 
    miembros_por_usuario = df.groupby("Inscrito por").size().reset_index(name="Total de miembros").sort_values(by="Total de miembros",ascending=False)
    top5_usuarios = df.groupby("Inscrito por").size().reset_index(name="Miembros por usuarios").sort_values(by="Miembros por usuarios",ascending=False).head(5)
-   st.title("5 usuarios con mas miembros")
-   fig = px.bar(
-    miembros_por_usuario,
-    x="Inscrito por",
-    y="Total de miembros",
-    title="Miembros por usuario",
-    text="Total de miembros",
-    color="Total de miembros"
-)
 
-st.plotly_chart(fig, use_container_width=True)
+
+#st.plotly_chart(fig, use_container_width=True)
 st.title("Cantidad de miembros por usuarios")
-st.dataframe(miembros_por_usuario)
+if data is not None:
+ st.dataframe(miembros_por_usuario)
