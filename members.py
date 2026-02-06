@@ -42,10 +42,28 @@ if data is not None:
     st.dataframe(df)
 
    miembros_por_usuario = df.groupby("Inscrito por").size().reset_index(name="Total de miembros").sort_values(by="Total de miembros",ascending=False)
-   top5_usuarios = df.groupby("Inscrito por").size().reset_index(name="Miembros por usuarios").sort_values(by="Miembros por usuarios",ascending=False).head(5)
+   top5_usuarios = df.groupby("Inscrito por").size().reset_index(name="Miembros por usuarios").sort_values(by="Miembros por usuarios",ascending=True).tail(5)
+   miembros_por_terrotorio = df.groupby("Territorio").size().reset_index(name="Miembros por territorio").sort_values(by="Miembros por territorio",ascending=False)
+
+
+
+
 
 
 #st.plotly_chart(fig, use_container_width=True)
-st.title("Cantidad de miembros por usuarios")
+
 if data is not None:
+ fig = px.bar(
+    top5_usuarios,
+    x="Miembros por usuarios",
+    y="Inscrito por",
+    text="Miembros por usuarios",
+    title="Top 5 usuarios con más miembros",
+    color="Miembros por usuarios"
+)
+ st.title("Total de miembros por territorios")
+ st.dataframe(miembros_por_terrotorio)
+ st.title("5 Usuarios con mas miembros")
+ st.plotly_chart(fig, use_container_width=True)
+ st.title("Total de miembros por usuarios")
  st.dataframe(miembros_por_usuario)
