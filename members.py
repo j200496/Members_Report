@@ -5,9 +5,14 @@ from pathlib import Path
 
 st.set_page_config(layout="wide")
 
-a,b = st.columns(2)
-b.image("Images/logofupu.png",caption="La fuerza del pueblo",width=100)
-st.title("Reporte de votantes inscritos")
+left, center, right = st.columns([2, 3, 2])
+
+with center:
+    st.image("Images/logofupu.png", 
+             caption="Plataforma de reportes de la fuerza del pueblo",width=50, 
+             use_container_width=True)  
+
+st.header("Reporte de votantes inscritos", divider="green")
 
 data = st.file_uploader("Sube el archivo excel",type=["xlsx"])
 
@@ -35,21 +40,21 @@ if data is not None:
 
    if sel:
     total = df_filter["Nombre"].count()
-    col1.metric(label="Total de miembros",value=total,border=True)
+    col1.metric(label="Total de votantes",value=total,border=True)
     hombres = (df_filter["Género"] == "M").sum()
     col2.metric(label="Hombres",value=hombres,border=True)
     mujeres = (df_filter["Género"] == "F").sum()
     col3.metric("Mujeres",value=mujeres,border=True)
    elif sel2:
        total2 = df_filterusers["Nombre"].count()
-       col1.metric(label="Total de miembros",value=total2,border=True)
+       col1.metric(label="Total de votantes",value=total2,border=True)
        hombres = (df_filterusers["Género"] == "M").sum()
        col2.metric(label="Hombres",value=hombres,border=True)
        mujeres = (df_filterusers["Género"] == "F").sum()
        col3.metric(label="Mujeres",value=mujeres,border=True)
    else:
      total1 = df["Nombre"].count()
-     col1.metric(label="Total de miembros",value=total1,border=True)
+     col1.metric(label="Total de votantes",value=total1,border=True)
      col2.metric(label="Hombres",value=hombres,border=True)
      col3.metric(label="Mujeres",value=mujeres,border=True)
 
@@ -80,9 +85,9 @@ if data is not None:
     title="Total de votantes por usuarios",
     color="Votantes por usuarios"
 )
- st.title("Total de votantes por territorios")
+ st.header("Total de votantes por territorios", divider="green")
  st.dataframe(miembros_por_terrotorio)
- st.title("Votantes por usuarios")
+ st.header("Votantes por usuarios", divider="green")
  st.plotly_chart(fig, use_container_width=True)
- st.title("Total de votantes por usuarios")
+ st.header("Total de votantes por usuarios", divider="green")
  st.dataframe(miembros_por_usuario)
