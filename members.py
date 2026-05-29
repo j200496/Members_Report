@@ -9,7 +9,7 @@ left, center, right = st.columns([2, 3, 2])
 
 with center:
     st.image("Images/logofupu.png", 
-             caption="Plataforma de reportes de la fuerza del pueblo",width=50, 
+             caption="Plataforma de reportes de la fuerza del pueblo -- Desarrollado por joeltechrd -- All rights reserved",width=50, 
              use_container_width=True)  
 
 st.header("Reporte de votantes inscritos", divider="green", text_alignment="center")
@@ -18,6 +18,7 @@ data = st.file_uploader("Sube el archivo excel",type=["xlsx"])
 
 hombres = 0
 mujeres = 0
+
 
 if data is not None:
    df = pd.read_excel(data)
@@ -29,13 +30,13 @@ if data is not None:
     placeholder="Buscar una territorio"
 )
    sel2 = st.selectbox(
-    "Filtrar por usuario",
-    options=df["Inscrito por"].unique(),
+    "Filtrar por lideres de equipo",
+    options=df["Lider"].unique(),
     index=None,
-    placeholder="Buscar un usuario"
+    placeholder="Buscar un lider"
 )
    df_filter = df[df["Territorio"] == sel]
-   df_filterusers = df[df["Inscrito por"] == sel2]
+   df_filterusers = df[df["Lider"] == sel2]
 
    hombres = (df["Género"] == "M").sum()
    mujeres = (df["Género"] == "F").sum()
@@ -87,8 +88,8 @@ if data is not None:
    else:    
     st.dataframe(df)
 
-   miembros_por_usuario = df.groupby("Inscrito por").size().reset_index(name="Total de votantes").sort_values(by="Total de votantes",ascending=False)
-   top5_usuarios = df.groupby("Inscrito por").size().reset_index(name="Votantes por usuarios").sort_values(by="Votantes por usuarios",ascending=False)
+   miembros_por_usuario = df.groupby("Lider").size().reset_index(name="Total de votantes").sort_values(by="Total de votantes",ascending=False)
+   top5_usuarios = df.groupby("Lider").size().reset_index(name="Votantes por usuarios").sort_values(by="Votantes por usuarios",ascending=False)
    miembros_por_terrotorio = df.groupby("Territorio").size().reset_index(name="Votantes por territorio").sort_values(by="Votantes por territorio",ascending=False)
 
 
@@ -98,7 +99,7 @@ if data is not None:
  fig = px.bar(
     top5_usuarios,
     x="Votantes por usuarios",
-    y="Inscrito por",
+    y="Lider",
     text="Votantes por usuarios",
     title="Total de votantes por usuarios",
     color_discrete_sequence=["lime"]
@@ -122,7 +123,7 @@ if data is not None:
 
  st.header("Votantes por usuarios", divider="green", text_alignment="center")
  st.plotly_chart(fig, use_container_width=True)
- st.header("Lista de votantes por usuarios", divider="green", text_alignment="center")
+ st.header("Lista de votantes por lideres", divider="green", text_alignment="center")
  st.dataframe(miembros_por_usuario)
  
  
@@ -143,7 +144,7 @@ if data is not None:
         color_discrete_map={"Hombres": "green", "Mujeres": "lime"}
     )
 
-    st.header("Distribución de género", divider="green")
+    st.header("Distribución de género", divider="green",text_alignment="center")
     st.plotly_chart(fig2, use_container_width=True)
 
     
@@ -165,15 +166,18 @@ if data is not None:
 
 
 if data is not None:
-  df_totalvotantesporgeneroyusuario = df.groupby(["Inscrito por", "Género"]).size().reset_index(name="Total de votantes por género y usuario").sort_values(by="Total de votantes por género y usuario",ascending=False)
+  df_totalvotantesporgeneroyusuario = df.groupby(["Lider", "Género"]).size().reset_index(name="Total de votantes por género y usuario").sort_values(by="Total de votantes por género y usuario",ascending=False)
   fig4 = px.bar(
     df_totalvotantesporgeneroyusuario,
     x="Total de votantes por género y usuario",
-    y="Inscrito por",
+    y="Lider",
     text="Total de votantes por género y usuario",
     title="Total de votantes por género y usuario",
     color_discrete_map={"M": "green", "F": "lime"},
     color="Género"
   )
-  st.header("Votantes por género y usuario", divider="green", text_alignment="center")
+  st.header("Votantes por género y lider", divider="green", text_alignment="center")
   st.plotly_chart(fig4, use_container_width=True)
+
+ # st.header("Chat bot asistente de campaña", divider="green", text_alignment="center")
+ # st.chat_input("Escribe tu pregunta aquí...",accept_audio=True, key="chat_input")
