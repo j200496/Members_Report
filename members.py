@@ -4,13 +4,7 @@ import plotly.express as px
 from pathlib import Path
 import google.generativeai as genai
 
-# Configuración de la API de Gemini
-if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"]:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-3.1-flash-lite")
-else:
-    model = None
+
 
 # Configuración de la página de Streamlit
 st.set_page_config(layout="wide", page_title="Reporte de Votantes", page_icon="📊")
@@ -20,7 +14,7 @@ left, center, right = st.columns([2, 3, 2])
 with center:
     st.image(
         "Images/logofupu.png", 
-        caption="Plataforma de reportes de la fuerza del pueblo -- Desarrollado por joeltechrd -- All rights reserved",
+        caption="Plataforma electoral de reportes -- Desarrollado por joeltechrd -- All rights reserved",
         use_container_width=True
     )  
 
@@ -93,7 +87,7 @@ if data is not None:
 
     # Procesamiento de agrupaciones para reportes gráficos
     miembros_por_usuario = df.groupby("Lider").size().reset_index(name="Total de votantes").sort_values(by="Total de votantes", ascending=False)
-    top5_usuarios = df.groupby("Lider").size().reset_index(name="Votantes por usuarios").sort_values(by="Votantes por usuarios", ascending=False).head(5)
+    top5_usuarios = df.groupby("Lider").size().reset_index(name="Votantes por coordinadores").sort_values(by="Votantes por coordinadores", ascending=False).head(5)
     miembros_por_territorio = df.groupby("Territorio").size().reset_index(name="Votantes por territorio").sort_values(by="Votantes por territorio", ascending=False)
 
     # Sección 1: Reportes por Territorios
@@ -107,7 +101,7 @@ if data is not None:
         orientation="h",
         text="Votantes por territorio",
         title="Total de votantes por territorios",
-        color_discrete_sequence=["lime"]
+        color_discrete_sequence=["green"]
     )
     figterr.update_layout(yaxis={'categoryorder':'total ascending'})
     st.header("Votantes por territorios", divider="green", text_alignment="center")
@@ -116,18 +110,18 @@ if data is not None:
     # Sección 2: Reportes por Líderes / Usuarios
     fig = px.bar(
         top5_usuarios,
-        x="Votantes por usuarios",
+        x="Votantes por coordinadores",
         y="Lider",
         orientation="h",
-        text="Votantes por usuarios",
-        title="Top 5 de votantes por usuarios",
-        color_discrete_sequence=["lime"]
+        text="Votantes por coordinadores",
+        title="Top 5 coordinadores con más votantes",
+        color_discrete_sequence=["green"]
     )
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
-    st.header("Votantes por usuarios", divider="green", text_alignment="center")
+    st.header("Votantes por coordinadores", divider="green", text_alignment="center")
     st.plotly_chart(fig, use_container_width=True)
     
-    st.header("Lista de votantes por líderes", divider="green", text_alignment="center")
+    st.header("Lista de votantes por coordinadores", divider="green", text_alignment="center")
     st.dataframe(miembros_por_usuario, use_container_width=True)
  
     # Sección 3: Distribución de Género General
@@ -135,17 +129,35 @@ if data is not None:
         "Género": ["Hombres", "Mujeres"], 
         "Cantidad": [hombres, mujeres] 
     })
+    
+    df_edades = df.groupby("Rango de edad").size().reset_index(name="Cantidad").sort_values(by="Cantidad", ascending=True)
 
-    fig2 = px.pie(
+    colu1, colu2 = st.columns(2)
+    colu2.fig1 = px.bar(
+        df_edades, 
+        x="Cantidad", 
+        y="Rango de edad",   
+        title="Distribución de votantes por edad", 
+        #color="Rango de edad",
+        #orientation="v", 
+        color_discrete_sequence=["green"],
+        width=900,
+        height=600
+    )
+    st.header("Distribución de edades", divider="green", text_alignment="center")
+    st.plotly_chart(colu2.fig1, use_container_width=True)
+    colu1.fig2 = px.pie(
         df_genero, 
         values="Cantidad", 
         names="Género", 
-        title="Porcentaje de votantes por género (Filtrado)", 
+        title="Porcentaje de votantes por género", 
         color="Género", 
-        color_discrete_map={"Hombres": "green", "Mujeres": "lime"}
+        color_discrete_map={"Hombres": "green", "Mujeres": "lightgreen"},
+         width=900,
+        height=600
     )
     st.header("Distribución de género", divider="green", text_alignment="center")
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(colu1.fig2, use_container_width=True)
 
     # Sección 4: Desglose Cruzado de Género por Territorio
     df_totalvotantesporgeneroenterritorio = df.groupby(["Territorio", "Género"]).size().reset_index(name="Total de votantes por género y territorio").sort_values(by="Total de votantes por género y territorio", ascending=False)
@@ -156,7 +168,7 @@ if data is not None:
         orientation="h",
         text="Total de votantes por género y territorio",
         title="Total de votantes por género y territorio",
-        color_discrete_map={"M": "green", "F": "lime"},
+        color_discrete_map={"M": "green", "F": "lightgreen"},
         color="Género"
     )
     fig3.update_layout(yaxis={'categoryorder':'total ascending'})
@@ -172,41 +184,12 @@ if data is not None:
         orientation="h",
         text="Total de votantes por género y usuario",
         title="Total de votantes por género y usuario",
-        color_discrete_map={"M": "green", "F": "lime"},
+        color_discrete_map={"M": "green", "F": "lightgreen"},
         color="Género"
     )
     fig4.update_layout(yaxis={'categoryorder':'total ascending'})
     st.header("Votantes por género y líder", divider="green", text_alignment="center")
     st.plotly_chart(fig4, use_container_width=True)
 
-    # Sección 6: Chatbot Inteligente de Campaña
-    st.header(" 👨‍💼 Chat bot asistente de campaña", divider="green", text_alignment="center")
-
-    datosbot = df.head(50)
-    context = datosbot.to_markdown(index=False)
-    pregunta = st.chat_input("Escribe tu pregunta aquí...")
-
-    if pregunta:
-        if model is not None:
-            with st.spinner("Procesando tu pregunta..."):
-                full_prompt = f"""
-                Eres un asistente de campaña experto. Utiliza la siguiente información estructurada extraída de un archivo de Excel para responder la pregunta del usuario de forma precisa.
-
-                CONTEXTO DE LA CAMPAÑA (DATOS DE EXCEL):
-                {context}
-
-                PREGUNTA DEL USUARIO:
-                {pregunta}
-
-                RESPUESTA:
-                """
-                try:
-                    respuesta = model.generate_content(full_prompt)
-                    st.chat_message("assistant").write(respuesta.text)
-                except Exception as e:
-                    if "429" in str(e):
-                        st.warning("⚠️ El bot está un poco ocupado procesando otras preguntas. Espera 10 segundos e intenta de nuevo.")
-                    else:
-                        st.error(f"⚠️ Ocurrió un error con el bot: {e}")
-        else:
-            st.error("⚠️ La clave de API de Gemini no está configurada o el bot no está disponible.")
+    
+        
