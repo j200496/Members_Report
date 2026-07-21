@@ -85,6 +85,10 @@ if data is not None:
     else:    
         st.dataframe(df, use_container_width=True)
 
+    st.button("Mandar mensajes masivos por WhatsApp a los votantes", icon="💬", on_click=lambda: genai.chat.send_message(
+        model="models/chat-bison-001",))
+
+
     # Procesamiento de agrupaciones para reportes gráficos
     miembros_por_usuario = df.groupby("Lider").size().reset_index(name="Total de votantes").sort_values(by="Total de votantes", ascending=False)
     top5_usuarios = df.groupby("Lider").size().reset_index(name="Votantes por coordinadores").sort_values(by="Votantes por coordinadores", ascending=False).head(5)
@@ -183,12 +187,12 @@ if data is not None:
         y="Lider",
         orientation="h",
         text="Total de votantes por género y usuario",
-        title="Total de votantes por género y usuario",
+        title="Total de votantes por género y coordinador",
         color_discrete_map={"M": "green", "F": "lightgreen"},
         color="Género"
     )
     fig4.update_layout(yaxis={'categoryorder':'total ascending'})
-    st.header("Votantes por género y líder", divider="green", text_alignment="center")
+    st.header("Votantes por género y coordinador", divider="green", text_alignment="center")
     st.plotly_chart(fig4, use_container_width=True)
 
     
