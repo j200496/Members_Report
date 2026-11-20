@@ -4,3 +4,5 @@ openpyxl
 google-generativeai
 tabulate
 plotly
+reportlab
+kaleido==0.2.1
